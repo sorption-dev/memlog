@@ -55,21 +55,34 @@ function isCompiled(): boolean {
 /** Resolve the pyodide package install path so Pyodide can locate its
  * WASM/stdlib assets without relying on CDN.
  *
- * Layouts:
- *   - dev            node_modules/pyodide/          (via require.resolve)
- *   - packaged app   <dir of binary>/pyodide/       (shipped portable folder)
- *   - env override   MEMLOG_PYODIDE_DIR             (explicit path wins)
+ * Layouts (checked in order):
+ *   - env override        MEMLOG_PYODIDE_DIR             (explicit path wins;
+ *                                                         set by Tauri shell)
+ *   - portable bundle     <dir of binary>/pyodide/       (`bun run bundle`)
+ *   - Tauri install       <dir of binary>/resources/pyodide/
+ *                                                        (sidecar run directly,
+ *                                                         e.g. as Claude Code
+ *                                                         MCP server, without
+ *                                                         the Tauri shell)
+ *   - dev                 node_modules/pyodide/          (via require.resolve)
  */
 function pyodideIndexURL(): string {
   const envOverride = process.env.MEMLOG_PYODIDE_DIR;
   if (envOverride) return envOverride;
 
   if (isCompiled()) {
-    const nextToBinary = join(dirname(process.execPath), "pyodide");
-    if (existsSync(join(nextToBinary, "pyodide.asm.js"))) return nextToBinary;
+    const exeDir = dirname(process.execPath);
+    const candidates = [
+      join(exeDir, "pyodide"),
+      join(exeDir, "resources", "pyodide"),
+    ];
+    for (const dir of candidates) {
+      if (existsSync(join(dir, "pyodide.asm.js"))) return dir;
+    }
     throw new Error(
-      `pyodide/ folder missing next to the binary (${nextToBinary}). ` +
-        `Ship the binary and the pyodide/ folder together — see scripts/bundle.mjs.`,
+      `pyodide/ folder missing — looked in ${candidates.join(" and ")}. ` +
+        `Ship the binary and the pyodide/ folder together (see ` +
+        `scripts/bundle.mjs), or set MEMLOG_PYODIDE_DIR to its location.`,
     );
   }
 
