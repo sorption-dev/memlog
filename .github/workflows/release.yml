@@ -71,6 +71,10 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # bun-compiled sidecar has a JS payload appended after the ELF —
+          # `strip` would drop it and break the binary. Disable strip in
+          # linuxdeploy's AppImage pipeline.
+          NO_STRIP: 'true'
         with:
           projectPath: viewer
           tagName: ${{ github.ref_name }}
@@ -83,4 +87,4 @@ jobs:
             **Linux**: `.AppImage` / `.deb`
           releaseDraft: true
           prerelease: false
-          args: --target ${{ matrix.target }}
+          args: --target ${{ matrix.target }} --verbose
