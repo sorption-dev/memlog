@@ -84,7 +84,7 @@ jobs:
 
             **macOS**: `.dmg`
             **Windows**: `.msi` / `.exe`
-            **Linux**: `.AppImage` / `.deb`
+            **Linux**: `.deb`
           releaseDraft: true
           prerelease: false
           args: --target ${{ matrix.target }} --verbose
