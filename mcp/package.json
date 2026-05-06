@@ -1,0 +1,35 @@
+{
+  "name": "memlog",
+  "version": "0.1.0",
+  "description": "Personal MCP journal with Russian morphology-aware FTS search",
+  "type": "module",
+  "bin": {
+    "memlog": "bin/memlog"
+  },
+  "main": "dist/lib.js",
+  "scripts": {
+    "build": "tsc",
+    "compile": "bun build src/cli.ts --compile --target=bun --outfile dist/memlog",
+    "bundle": "bun run scripts/bundle.mjs",
+    "vendor-wheels": "bun run scripts/vendor-wheels.mjs",
+    "dev": "bun run src/cli.ts",
+    "dev:mcp": "bun run src/cli.ts --mcp",
+    "smoke": "bun run scripts/smoke.ts",
+    "mcp-smoke": "bun run scripts/mcp-smoke.ts",
+    "smoke:morph": "bun run scripts/smoke-morph.mjs",
+    "seed": "bun run scripts/seed-from-claude-memory.ts",
+    "reindex-fts": "bun run scripts/reindex-fts.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "pyodide": "^0.29.3",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "bun": ">=1.3"
+  }
+}

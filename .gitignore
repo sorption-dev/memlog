@@ -1,0 +1,14 @@
+.DS_Store
+docs
+node_modules
+dist
+.venv
+*.log
+.agents
+.claude
+*.tsbuildinfo
+mcp/data/
+mcp/dist/memlog
+mcp/dist/portable/
+data
+.git-old

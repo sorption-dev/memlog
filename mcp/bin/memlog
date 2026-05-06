@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Unified launcher: `memlog` starts the HTTP API server, `memlog --mcp`
+# starts the MCP stdio server.
+# Prefers the compiled single-file binary (dist/memlog); falls back to
+# `bun run src/cli.ts` from sources during development.
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$HERE/.." && pwd)"
+
+if [ -x "$ROOT/dist/memlog" ]; then
+  exec "$ROOT/dist/memlog" "$@"
+else
+  exec bun run "$ROOT/src/cli.ts" "$@"
+fi
