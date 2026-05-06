@@ -29,21 +29,39 @@ Both the app and the MCP read it. Resolution order: `MEMLOG_DB` env var → `--d
 
 ### 2. Wire it up to your LLM client
 
-Find the bundled binary path:
+> An in-app "Connect to Claude/Codex" button is on the roadmap. Until then, register the MCP by hand — pick your client below.
+
+#### 2a. Find the bundled binary
+
+The sidecar `memlog` binary lives next to the main desktop app binary:
 
 | OS | Path |
 |---|---|
-| macOS | `/Applications/memlog.app/Contents/Resources/binaries/memlog` |
-| Windows | `C:\Program Files\memlog\binaries\memlog.exe` |
-| Linux | `/usr/lib/memlog/binaries/memlog` (deb) or inside the AppImage |
+| macOS | `/Applications/memlog.app/Contents/MacOS/memlog` |
+| Windows | `%LOCALAPPDATA%\memlog\memlog.exe` (i.e. `C:\Users\<you>\AppData\Local\memlog\memlog.exe`) |
+| Linux (deb) | `/usr/bin/memlog` |
 
-**Claude Code:**
+Use this absolute path in every client config below.
+
+#### 2b. Claude Code (CLI)
+
+Easiest — let the CLI write the config for you:
 
 ```bash
 claude mcp add memlog -- <bundled-binary-path> --mcp
 ```
 
-**Claude Desktop** — edit `claude_desktop_config.json`:
+Or edit `~/.claude.json` directly under `mcpServers` (or `<repo>/.mcp.json` for per-project scope).
+
+#### 2c. Claude Desktop
+
+Edit (creating if missing) `claude_desktop_config.json`:
+
+| OS / installer | Path |
+|---|---|
+| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| Windows (standard installer from claude.ai) | `%APPDATA%\Claude\claude_desktop_config.json` (i.e. `C:\Users\<you>\AppData\Roaming\Claude\claude_desktop_config.json`) |
+| Windows (MSIX / Microsoft Store) | `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json` |
 
 ```json
 {
@@ -56,7 +74,21 @@ claude mcp add memlog -- <bundled-binary-path> --mcp
 }
 ```
 
-Restart the client. The model now sees 8 `journal_*` tools.
+If the file already exists, merge the `memlog` entry into the existing `mcpServers` object — don't overwrite the whole file.
+
+#### 2d. ChatGPT Codex (CLI)
+
+Edit `~/.codex/config.toml` (it's TOML, not JSON):
+
+```toml
+[mcp_servers.memlog]
+command = "<bundled-binary-path>"
+args = ["--mcp"]
+```
+
+#### 2e. Restart and verify
+
+Restart the client. The model now sees 8 `journal_*` tools. To sanity-check, ask it: *"Call `journal_context` and tell me the project info."*
 
 ---
 
