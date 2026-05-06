@@ -5,27 +5,38 @@
 **A local, lightweight structured memory layer for LLM.**
 
 MCP for Claude Code, ChatGPT Codex and etc.
-UI fro you.
+UI for you.
 
-![memlog_preview](./preview.png)
+<img src="./preview.png" alt="memlog" width="600" />
 
 </div>
+
+## Why memlog
+
+A bare LLM forgets everything between sessions. You end up re-pasting the same context, re-deciding settled questions, and watching the model propose approaches you rejected last week. memlog gives the model a small, structured place to write things down — and pull them back later — without ceremony.
+
+- **No embeddings**, no vector search, no GPU, no Python. Just a SQLite file with FTS5, plus a tiny Pyodide-bundled morphology pass.
+
+## How to use
+
+1. Install the desktop app (bundled with the MCP server binary).
+2. Register the MCP server in your client (Claude, ChatGPT Codex, etc.) — point it to the bundled binary.
+3. Start chatting. Ask to "save to memlog" or "check memlog" or something like that when it's relevant.
+4. The model will write important info to the journal, and pull it back when relevant.
+5. Open the desktop app to read, search, redact, and manage the journal entries manually to see what the model remembers.
+
+<p align="center">
+  <img src="./preview_howitworks.png" alt="memlog preview" width="600" />
+</p>
+
 
 ## Install
 
 ### 1. Get the desktop app
 
-Download for your OS from [**Releases**](https://github.com/<your-user>/memlog/releases/latest):
+Release contains both the MCP server binary and the desktop viewer app.
 
-Open it once. The app bundles the MCP server binary. By default the database lives next to the binary at `<install_dir>/data/db.sqlite` — both the desktop app and the MCP server look there, so they share one DB without any extra setup.
-
-Want it elsewhere (custom drive, synced folder, an existing DB on macOS, etc.)? Drop a `config.json` next to the binary:
-
-```json
-{ "db_path": "/absolute/path/to/your/db.sqlite" }
-```
-
-Both the app and the MCP read it. Resolution order: `MEMLOG_DB` env var → `--db` flag → `config.json` `db_path` → built-in default.
+Download for your OS from [**Releases**](https://github.com/sorption-dev/memlog/releases/latest).
 
 ### 2. Wire it up to your LLM client
 
@@ -92,9 +103,6 @@ Restart the client. The model now sees 8 `journal_*` tools. To sanity-check, ask
 
 ---
 
-## Why memlog
-
-A bare LLM forgets everything between sessions. You end up re-pasting the same context, re-deciding settled questions, and watching the model propose approaches you rejected last week. memlog gives the model a small, structured place to write things down — and pull them back later — without ceremony.
 
 ## vs. MemPalace
 
@@ -144,6 +152,19 @@ The model gets 8 MCP tools:
 
 `session_id` is auto-derived from the git root, so the model just calls `journal_write` and the entry lands in the right project's bucket.
 
+## Database
+
+By default the database lives next to the binary at `<install_dir>/data/db.sqlite` — both the desktop app and the MCP server look there, so they share one DB without any extra setup.
+
+Want it elsewhere (custom drive, synced folder, an existing DB on macOS, etc.)? Drop a `config.json` next to the binary:
+
+```json
+{ "db_path": "/absolute/path/to/your/db.sqlite" }
+```
+
+Both the app and the MCP read it. Resolution order: `MEMLOG_DB` env var → `--db` flag → `config.json` `db_path` → built-in default.
+
+
 ## Run modes
 
 ```bash
@@ -155,7 +176,6 @@ memlog --help
 
 Flags: `--db <path>` (env `MEMLOG_DB`), `--port <n>` (env `MEMLOG_PORT`, `--http` only), `--host <addr>`.
 
----
 
 ## Build from source
 
