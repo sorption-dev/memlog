@@ -30,7 +30,6 @@ A bare LLM forgets everything between sessions. You end up re-pasting the same c
 </p>
 
 
-
 ## Install
 
 ### 1. Get the desktop app
