@@ -29,7 +29,6 @@ A bare LLM forgets everything between sessions. You end up re-pasting the same c
   <img src="./preview_howitworks.png" alt="memlog preview" width="600" />
 </p>
 
-
 ## Install
 
 ### 1. Get the desktop app
@@ -46,11 +45,11 @@ Download for your OS from [**Releases**](https://github.com/sorption-dev/memlog/
 
 The sidecar `memlog` binary lives next to the main desktop app binary:
 
-| OS | Path |
-|---|---|
-| macOS | `/Applications/memlog.app/Contents/MacOS/memlog` |
-| Windows | `%LOCALAPPDATA%\memlog\memlog.exe` (i.e. `C:\Users\<you>\AppData\Local\memlog\memlog.exe`) |
-| Linux (deb) | `/usr/bin/memlog` |
+| OS          | Path                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| macOS       | `/Applications/memlog.app/Contents/MacOS/memlog`                                           |
+| Windows     | `%LOCALAPPDATA%\memlog\memlog.exe` (i.e. `C:\Users\<you>\AppData\Local\memlog\memlog.exe`) |
+| Linux (deb) | `/usr/bin/memlog`                                                                          |
 
 Use this absolute path in every client config below.
 
@@ -68,11 +67,13 @@ Or edit `~/.claude.json` directly under `mcpServers` (or `<repo>/.mcp.json` for 
 
 Edit (creating if missing) `claude_desktop_config.json`:
 
-| OS / installer | Path |
-|---|---|
-| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| OS / installer                              | Path                                                                                                                    |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| macOS                                       | `~/Library/Application Support/Claude/claude_desktop_config.json`                                                       |
 | Windows (standard installer from claude.ai) | `%APPDATA%\Claude\claude_desktop_config.json` (i.e. `C:\Users\<you>\AppData\Roaming\Claude\claude_desktop_config.json`) |
-| Windows (MSIX / Microsoft Store) | `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json` |
+| Windows (MSIX / Microsoft Store)            | `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json`                     |
+
+**Common Example:**
 
 ```json
 {
@@ -85,7 +86,21 @@ Edit (creating if missing) `claude_desktop_config.json`:
 }
 ```
 
-If the file already exists, merge the `memlog` entry into the existing `mcpServers` object — don't overwrite the whole file.
+**For Windows:**
+
+```json
+{
+  "mcpServers": {
+    "memlog": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "cd /d C:\\Users\\Morpheus\\AppData\\Local\\memlog && memlog.exe --mcp"
+      ]
+    }
+  }
+}
+```
 
 #### 2d. ChatGPT Codex (CLI)
 
@@ -99,26 +114,25 @@ args = ["--mcp"]
 
 #### 2e. Restart and verify
 
-Restart the client. The model now sees 8 `journal_*` tools. To sanity-check, ask it: *"Call `journal_context` and tell me the project info."*
+Restart the client. The model now sees 8 `journal_*` tools. To sanity-check, ask it: _"Call `journal_context` and tell me the project info."_
 
 ---
-
 
 ## vs. MemPalace
 
 [MemPalace](https://github.com/MemPalace/mempalace) is the popular alternative. It does a lot more — and that's the problem if you just want your agent to remember things.
 
-|  | MemPalace | **memlog** |
-|---|---|---|
-| Search | Semantic (vector embeddings) | SQLite FTS5 |
-| Embedding model | Required, runs locally | None |
-| GPU / CUDA | Effectively required for decent speed | Not used |
-| Windows support | Local LLM stack often broken on Windows even with CUDA | Just a single binary, runs anywhere |
-| Disk footprint | GBs (models + embeddings) | ~50 MB (binary + Pyodide for morphology) |
-| Russian / non-English | English-tuned, no morphology | Russian morphology built in (pymorphy3, offline) |
-| What's stored | Verbatim conversation chunks | Compact typed entries the model writes intentionally |
-| Tool surface | 29 MCP tools (wings / rooms / drawers / diaries / …) | 8 MCP tools |
-| Setup | Python env + model downloads | Download release, point Claude at the binary |
+|                       | MemPalace                                              | **memlog**                                           |
+| --------------------- | ------------------------------------------------------ | ---------------------------------------------------- |
+| Search                | Semantic (vector embeddings)                           | SQLite FTS5                                          |
+| Embedding model       | Required, runs locally                                 | None                                                 |
+| GPU / CUDA            | Effectively required for decent speed                  | Not used                                             |
+| Windows support       | Local LLM stack often broken on Windows even with CUDA | Just a single binary, runs anywhere                  |
+| Disk footprint        | GBs (models + embeddings)                              | ~50 MB (binary + Pyodide for morphology)             |
+| Russian / non-English | English-tuned, no morphology                           | Russian morphology built in (pymorphy3, offline)     |
+| What's stored         | Verbatim conversation chunks                           | Compact typed entries the model writes intentionally |
+| Tool surface          | 29 MCP tools (wings / rooms / drawers / diaries / …)   | 8 MCP tools                                          |
+| Setup                 | Python env + model downloads                           | Download release, point Claude at the binary         |
 
 memlog is deliberately the boring choice: no embeddings, no models, no GPU, no Python. Just a SQLite file with FTS5, plus a tiny Pyodide-bundled morphology pass for Russian.
 
@@ -139,16 +153,16 @@ memlog is deliberately the boring choice: no embeddings, no models, no GPU, no P
 
 The model gets 8 MCP tools:
 
-| Tool | What it does |
-|---|---|
-| `journal_write` | Log a typed entry |
-| `journal_search` | FTS query, filter by kind / session / group / time |
-| `journal_recent` | Recent entries for current project |
-| `journal_get` | Fetch one entry, optionally with link neighbors |
-| `journal_link` | Connect two entries via a relation |
-| `journal_redact` | Tombstone an entry, keep its links |
-| `journal_context` | Project info, available groups, morph status |
-| `journal_stats` | Activity by kind / day / hour |
+| Tool              | What it does                                       |
+| ----------------- | -------------------------------------------------- |
+| `journal_write`   | Log a typed entry                                  |
+| `journal_search`  | FTS query, filter by kind / session / group / time |
+| `journal_recent`  | Recent entries for current project                 |
+| `journal_get`     | Fetch one entry, optionally with link neighbors    |
+| `journal_link`    | Connect two entries via a relation                 |
+| `journal_redact`  | Tombstone an entry, keep its links                 |
+| `journal_context` | Project info, available groups, morph status       |
+| `journal_stats`   | Activity by kind / day / hour                      |
 
 `session_id` is auto-derived from the git root, so the model just calls `journal_write` and the entry lands in the right project's bucket.
 
@@ -164,7 +178,6 @@ Want it elsewhere (custom drive, synced folder, an existing DB on macOS, etc.)? 
 
 Both the app and the MCP read it. Resolution order: `MEMLOG_DB` env var → `--db` flag → `config.json` `db_path` → built-in default.
 
-
 ## Run modes
 
 ```bash
@@ -175,7 +188,6 @@ memlog --help
 ```
 
 Flags: `--db <path>` (env `MEMLOG_DB`), `--port <n>` (env `MEMLOG_PORT`, `--http` only), `--host <addr>`.
-
 
 ## Build from source
 
@@ -204,5 +216,4 @@ Pre-1.0. Schema may evolve. Single-user / single-machine is the supported path.
 
 ## License
 
-**memlog** is source-available under the [memlog Personal Use License 1.0](LICENSE) — free for personal, non-commercial use on your own devices, including modifications for personal use. 
-
+**memlog** is source-available under the [memlog Personal Use License 1.0](LICENSE) — free for personal, non-commercial use on your own devices, including modifications for personal use.
