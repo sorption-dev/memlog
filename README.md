@@ -17,7 +17,15 @@ UI fro you.
 
 Download for your OS from [**Releases**](https://github.com/<your-user>/memlog/releases/latest):
 
-Open it once. The app bundles the MCP server binary and creates the database at `~/.memlog/memlog.db`.
+Open it once. The app bundles the MCP server binary. By default the database lives next to the binary at `<install_dir>/data/db.sqlite` — both the desktop app and the MCP server look there, so they share one DB without any extra setup.
+
+Want it elsewhere (custom drive, synced folder, an existing DB on macOS, etc.)? Drop a `config.json` next to the binary:
+
+```json
+{ "db_path": "/absolute/path/to/your/db.sqlite" }
+```
+
+Both the app and the MCP read it. Resolution order: `MEMLOG_DB` env var → `--db` flag → `config.json` `db_path` → built-in default.
 
 ### 2. Wire it up to your LLM client
 

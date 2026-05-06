@@ -241,26 +241,31 @@ async fn spawn_sidecar(app: &AppHandle) -> Result<Arc<Ipc>, Box<dyn std::error::
         .join("resources")
         .join("pyodide");
 
-    // One visible folder in $HOME — `~/memlog/db.sqlite`. Override with
-    // the MEMLOG_DATA_DIR env var.
-    let data_dir = match std::env::var("MEMLOG_DATA_DIR") {
-        Ok(v) if !v.is_empty() => std::path::PathBuf::from(v),
-        _ => app.path().home_dir()?.join("memlog"),
-    };
-    std::fs::create_dir_all(&data_dir)?;
-    let db_path = data_dir.join("db.sqlite");
+    // Co-located config: <install_dir>/config.json sits next to both the
+    // Tauri exe and the sidecar binary. Schema: { "db_path": "..." }.
+    // If `db_path` is set we forward it via --db; otherwise the sidecar
+    // falls back to <install_dir>/data/db.sqlite — same dir, single source
+    // of truth for both viewer and MCP.
+    let config_path = std::env::current_exe()?
+        .parent()
+        .ok_or("current_exe has no parent")?
+        .join("config.json");
 
-    let db_str = db_path
-        .to_str()
-        .ok_or("non-utf8 db path")?
-        .to_string();
+    let configured_db: Option<String> = std::fs::read_to_string(&config_path)
+        .ok()
+        .and_then(|s| serde_json::from_str::<Value>(&s).ok())
+        .and_then(|v| v.get("db_path").and_then(Value::as_str).map(str::to_string))
+        .filter(|s| !s.is_empty());
 
-    let (mut rx, child) = app
+    let mut cmd = app
         .shell()
         .sidecar("memlog")?
-        .args(["--db", &db_str])
-        .env("MEMLOG_PYODIDE_DIR", &pyodide_dir)
-        .spawn()?;
+        .env("MEMLOG_PYODIDE_DIR", &pyodide_dir);
+    if let Some(db) = configured_db {
+        cmd = cmd.args(["--db", &db]);
+    }
+
+    let (mut rx, child) = cmd.spawn()?;
 
     let ipc = Arc::new(Ipc {
         child: Mutex::new(child),

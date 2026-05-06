@@ -1,6 +1,7 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync, statSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
+import { appDir, readConfig } from "./config.js";
 import { makeLogger } from "./log.js";
 
 const log = makeLogger("db");
@@ -178,8 +179,14 @@ function migrate(db: DB): void {
   }
 }
 
+/**
+ * Priority: MEMLOG_DB env → <appDir>/config.json `db_path` → <appDir>/data/db.sqlite.
+ * `--db` on the CLI bypasses this entirely (see cli.ts).
+ */
 export function resolveDBPath(): string {
   const env = process.env.MEMLOG_DB;
   if (env && env.length > 0) return env;
-  return `${process.cwd()}/data/db.sqlite`;
+  const cfg = readConfig();
+  if (cfg.db_path && cfg.db_path.length > 0) return cfg.db_path;
+  return join(appDir(), "data", "db.sqlite");
 }
