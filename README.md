@@ -166,17 +166,25 @@ The model gets 8 MCP tools:
 
 `session_id` is auto-derived from the git root, so the model just calls `journal_write` and the entry lands in the right project's bucket.
 
-## Database
+## Config & database
 
-By default the database lives next to the binary at `<install_dir>/data/db.sqlite` — both the desktop app and the MCP server look there, so they share one DB without any extra setup.
+memlog follows OS conventions for where to put things, so config and data **survive app updates** (on macOS the `.app` bundle gets replaced wholesale on every update — anything inside `Contents/MacOS/` is wiped):
 
-Want it elsewhere (custom drive, synced folder, an existing DB on macOS, etc.)? Drop a `config.json` next to the binary:
+| OS      | `config.json`                                  | `db.sqlite` (default)                        |
+| ------- | ---------------------------------------------- | -------------------------------------------- |
+| macOS   | `~/Library/Application Support/memlog/`        | `~/Library/Application Support/memlog/`      |
+| Windows | `%APPDATA%\memlog\` (Roaming)                  | `%LOCALAPPDATA%\memlog\` (Local)             |
+| Linux   | `$XDG_CONFIG_HOME/memlog/` (≈ `~/.config/memlog/`) | `$XDG_DATA_HOME/memlog/` (≈ `~/.local/share/memlog/`) |
+
+Both the desktop app and the standalone MCP sidecar resolve to the same paths, so they share one DB without any setup. The folders + a `config.json` stub (with the default `db_path` filled in) are created automatically on first launch.
+
+Want the DB elsewhere (custom drive, synced folder, an existing file)? Edit `db_path` in `config.json`:
 
 ```json
 { "db_path": "/absolute/path/to/your/db.sqlite" }
 ```
 
-Both the app and the MCP read it. Resolution order: `MEMLOG_DB` env var → `--db` flag → `config.json` `db_path` → built-in default.
+Resolution order: `MEMLOG_DB` env var → `--db` flag → `config.json` `db_path` → platform default.
 
 ## Run modes
 

@@ -241,29 +241,20 @@ async fn spawn_sidecar(app: &AppHandle) -> Result<Arc<Ipc>, Box<dyn std::error::
         .join("resources")
         .join("pyodide");
 
-    // Co-located config: <install_dir>/config.json sits next to both the
-    // Tauri exe and the sidecar binary. Schema: { "db_path": "..." }.
-    // If `db_path` is set we forward it via --db; otherwise the sidecar
-    // falls back to <install_dir>/data/db.sqlite — same dir, single source
-    // of truth for both viewer and MCP.
-    let config_path = std::env::current_exe()?
-        .parent()
-        .ok_or("current_exe has no parent")?
-        .join("config.json");
-
-    let configured_db: Option<String> = std::fs::read_to_string(&config_path)
-        .ok()
-        .and_then(|s| serde_json::from_str::<Value>(&s).ok())
-        .and_then(|v| v.get("db_path").and_then(Value::as_str).map(str::to_string))
-        .filter(|s| !s.is_empty());
-
-    let mut cmd = app
+    // Config + DB live in canonical per-OS locations (Application Support
+    // on macOS, %APPDATA%/%LOCALAPPDATA% on Windows, XDG dirs on Linux —
+    // see mcp/src/config.ts for exact paths). Both the viewer and the
+    // standalone MCP sidecar resolve there independently, so they always
+    // share the same DB. Living outside the install dir means user data
+    // survives app updates — on macOS the .app bundle is replaced wholesale,
+    // so anything inside Contents/MacOS would be wiped each update.
+    //
+    // The sidecar handles directory + stub config creation itself; we don't
+    // need to forward --db here.
+    let cmd = app
         .shell()
         .sidecar("memlog")?
         .env("MEMLOG_PYODIDE_DIR", &pyodide_dir);
-    if let Some(db) = configured_db {
-        cmd = cmd.args(["--db", &db]);
-    }
 
     let (mut rx, child) = cmd.spawn()?;
 
