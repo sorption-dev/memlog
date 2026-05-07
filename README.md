@@ -95,7 +95,7 @@ Edit (creating if missing) `claude_desktop_config.json`:
       "command": "cmd",
       "args": [
         "/c",
-        "cd /d C:\\Users\\Morpheus\\AppData\\Local\\memlog && memlog.exe --mcp"
+       "cd /d \"%LOCALAPPDATA%\\memlog\" && memlog.exe --mcp"
       ]
     }
   }
