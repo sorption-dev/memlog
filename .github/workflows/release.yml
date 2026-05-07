@@ -16,8 +16,8 @@ jobs:
         include:
           - platform: macos-latest        # Apple Silicon
             target: aarch64-apple-darwin
-          - platform: macos-13            # Intel Mac
-            target: x86_64-apple-darwin
+          # - platform: macos-13            # Intel Mac
+          #   target: x86_64-apple-darwin
           - platform: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
           - platform: windows-latest
@@ -75,6 +75,10 @@ jobs:
           # `strip` would drop it and break the binary. Disable strip in
           # linuxdeploy's AppImage pipeline.
           NO_STRIP: 'true'
+          # Ad-hoc codesign on macOS so Gatekeeper doesn't reject the
+          # downloaded .app as "damaged". Not a real Developer ID — users
+          # still need to right-click → Open the first time.
+          APPLE_SIGNING_IDENTITY: ${{ startsWith(matrix.platform, 'macos') && '-' || '' }}
         with:
           projectPath: viewer
           tagName: ${{ github.ref_name }}
