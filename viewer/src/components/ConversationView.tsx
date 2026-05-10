@@ -47,7 +47,7 @@ export function ConversationView({ entryId, hasSource, sourcePath }: Props) {
   if (!hasSource) {
     return (
       <section className="mt-10 border-t border-[var(--color-border)] pt-5">
-        <div className="font-mono text-[11px] text-[var(--color-ink-faint)]">
+        <div className="text-[11px] text-[var(--color-ink-faint)]">
           {t("conv.unavailable")}
         </div>
       </section>
@@ -59,7 +59,7 @@ export function ConversationView({ entryId, hasSource, sourcePath }: Props) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-ink-dim)] hover:text-[var(--color-accent)] transition-colors"
+        className="text-[11px] uppercase tracking-widest text-[var(--color-ink-dim)] hover:text-[var(--color-accent)] transition-colors"
       >
         {open ? "▾" : "▸"} {open ? t("conv.hide") : t("conv.show")}
       </button>
@@ -67,30 +67,30 @@ export function ConversationView({ entryId, hasSource, sourcePath }: Props) {
       {open && (
         <div className="mt-4">
           {loading && (
-            <div className="font-mono text-xs text-[var(--color-ink-faint)]">
+            <div className="text-xs text-[var(--color-ink-faint)]">
               {t("conv.loading")}
             </div>
           )}
 
           {error && (
-            <div className="font-mono text-xs text-[var(--color-danger)]">{error}</div>
+            <div className="text-xs text-[var(--color-danger)]">{error}</div>
           )}
 
           {data && !loading && !data.fileExists && (
-            <div className="font-mono text-xs text-[var(--color-danger)]">
+            <div className="text-xs text-[var(--color-danger)]">
               {t("conv.file_missing", { path: data.path ?? "" })}
             </div>
           )}
 
           {data && data.fileExists && data.messages.length === 0 && (
-            <div className="font-mono text-xs text-[var(--color-ink-faint)]">
+            <div className="text-xs text-[var(--color-ink-faint)]">
               {t("conv.no_messages")}
             </div>
           )}
 
           {data && data.fileExists && data.messages.length > 0 && (
             <>
-              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
                 <span>
                   {t("conv.around", {
                     total: data.totalMessages,
@@ -126,7 +126,7 @@ export function ConversationView({ entryId, hasSource, sourcePath }: Props) {
                         : "border-[var(--color-border)]",
                     ].join(" ")}
                   >
-                    <div className="flex items-baseline gap-2 font-mono text-[10px] uppercase tracking-wider">
+                    <div className="flex items-baseline gap-2 text-[10px] uppercase tracking-wider">
                       <span style={{ color: ROLE_COLOR[m.role] }}>
                         {t(`conv.role_${m.role}`)}
                       </span>

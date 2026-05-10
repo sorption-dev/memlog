@@ -120,7 +120,7 @@ export function GraphPage() {
   if (error) {
     return (
       <div className="px-10 py-16">
-        <div className="font-mono text-xs uppercase text-[var(--color-danger)]">
+        <div className="text-xs uppercase text-[var(--color-danger)]">
           {t("common.error")}
         </div>
         <pre className="mt-3 text-sm text-[var(--color-ink-dim)] whitespace-pre-wrap">
@@ -134,11 +134,11 @@ export function GraphPage() {
     <div className="flex h-full">
       <div ref={wrapRef} className="flex-1 relative bg-[var(--color-bg)]">
         {raw === null ? (
-          <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-[var(--color-ink-faint)]">
+          <div className="absolute inset-0 flex items-center justify-center text-xs text-[var(--color-ink-faint)]">
             {t("common.loading_graph")}
           </div>
         ) : data.nodes.length === 0 ? (
-          <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-[var(--color-ink-faint)]">
+          <div className="absolute inset-0 flex items-center justify-center text-xs text-[var(--color-ink-faint)]">
             {t("graph.empty")}
           </div>
         ) : (
@@ -189,7 +189,7 @@ export function GraphPage() {
 
         {hoveredNode && (
           <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-md bg-[var(--color-surface-solid)] border border-[var(--color-border)] rounded-[3px] p-3 pointer-events-none">
-            <div className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-ink-faint)]">
+            <div className="text-[10px] uppercase tracking-wider text-[var(--color-ink-faint)]">
               #{hoveredNode.id} · {t(`kind.${hoveredNode.kind}`)}
               {hoveredNode.session_id ? ` · ${hoveredNode.session_id}` : ""}
             </div>
@@ -200,10 +200,10 @@ export function GraphPage() {
 
       <aside className="w-64 shrink-0 border-l border-[var(--color-border)] p-5 flex flex-col gap-6 overflow-y-auto">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
+          <div className="text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
             {t("graph.legend")}
           </div>
-          <ul className="mt-2 flex flex-col gap-1 font-mono text-xs">
+          <ul className="mt-2 flex flex-col gap-1 text-xs">
             {KINDS.map((k) => {
               const on = activeKinds.has(k);
               return (
@@ -239,10 +239,10 @@ export function GraphPage() {
 
         {sessions.length > 0 && (
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
+            <div className="text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
               {t("graph.session_filter")}
             </div>
-            <ul className="mt-2 flex flex-col gap-0.5 font-mono text-xs">
+            <ul className="mt-2 flex flex-col gap-0.5 text-xs">
               <li>
                 <button
                   type="button"
@@ -288,7 +288,7 @@ export function GraphPage() {
         )}
 
         <div>
-          <label className="flex items-center gap-2 font-mono text-xs text-[var(--color-ink-dim)] cursor-pointer select-none">
+          <label className="flex items-center gap-2 text-xs text-[var(--color-ink-dim)] cursor-pointer select-none">
             <input
               type="checkbox"
               checked={includeSuperseded}
@@ -299,7 +299,7 @@ export function GraphPage() {
           </label>
         </div>
 
-        <div className="mt-auto font-mono text-[10px] text-[var(--color-ink-faint)] leading-relaxed">
+        <div className="mt-auto text-[10px] text-[var(--color-ink-faint)] leading-relaxed">
           {t("graph.hint_size")}
           <br />
           {t("graph.hint_click")}

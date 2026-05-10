@@ -41,7 +41,7 @@ function NotFound() {
   const t = useT();
   return (
     <div className="px-10 py-16">
-      <div className="font-mono text-xs uppercase text-[var(--color-ink-faint)]">404</div>
+      <div className="text-xs uppercase text-[var(--color-ink-faint)]">404</div>
       <h1 className="mt-2 text-3xl display-rule">{t("common.not_found")}</h1>
     </div>
   );
@@ -50,7 +50,7 @@ function NotFound() {
 function GraphLoading() {
   const t = useT();
   return (
-    <div className="px-10 py-16 font-mono text-xs text-[var(--color-ink-faint)]">
+    <div className="px-10 py-16 text-xs text-[var(--color-ink-faint)]">
       {t("common.loading_graph")}
     </div>
   );

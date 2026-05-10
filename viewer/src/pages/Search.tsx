@@ -148,7 +148,7 @@ export function SearchPage() {
 
   return (
     <div className="px-10 py-10 max-w-5xl mx-auto">
-      <div className="font-mono text-[11px] uppercase tracking-wider text-[var(--color-ink-faint)]">
+      <div className="text-[11px] uppercase tracking-wider text-[var(--color-ink-faint)]">
         {t("search.overline")}
       </div>
       <h1 className="mt-1 text-4xl font-sans tracking-tight display-rule">
@@ -165,7 +165,7 @@ export function SearchPage() {
           className="w-full bg-transparent border-b-2 border-[var(--color-border-strong)] focus:border-[var(--color-accent)] outline-none text-2xl py-3 font-sans placeholder:text-[var(--color-ink-faint)] tracking-tight"
         />
         {loading && (
-          <span className="absolute right-0 top-1/2 -translate-y-1/2 font-mono text-[10px] text-[var(--color-ink-faint)]">
+          <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] text-[var(--color-ink-faint)]">
             …
           </span>
         )}
@@ -207,7 +207,7 @@ export function SearchPage() {
         </label>
       </div>
 
-      <div className="mt-8 flex items-baseline justify-between font-mono text-[11px] text-[var(--color-ink-faint)] uppercase tracking-widest">
+      <div className="mt-8 flex items-baseline justify-between text-[11px] text-[var(--color-ink-faint)] uppercase tracking-widest">
         <span>
           {result ? t("search.results", { count: result.hits.length }) : "—"}
         </span>
@@ -219,7 +219,7 @@ export function SearchPage() {
       <div className="mt-2">
         {error && <div className="text-sm text-[var(--color-danger)] font-mono">{error}</div>}
         {result && result.hits.length === 0 && !loading && (
-          <div className="mt-8 font-mono text-sm text-[var(--color-ink-faint)]">
+          <div className="mt-8 text-sm text-[var(--color-ink-faint)]">
             {t("search.empty_tip")}
           </div>
         )}

@@ -79,7 +79,7 @@ export function ConfirmDialog({
             {body}
           </p>
         )}
-        <div className="mt-6 flex items-center justify-end gap-2 font-mono text-xs uppercase tracking-wider">
+        <div className="mt-6 flex items-center justify-end gap-2 text-xs uppercase tracking-wider">
           <button
             type="button"
             onClick={onCancel}

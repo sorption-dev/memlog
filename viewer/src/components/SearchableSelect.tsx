@@ -191,7 +191,7 @@ export function SearchableSelect({
             }}
             onKeyDown={onKey}
             placeholder="filter…"
-            className="bg-transparent border-b border-[var(--color-border)] outline-none px-2 py-1.5 font-mono text-xs placeholder:text-[var(--color-ink-faint)]"
+            className="bg-transparent border-b border-[var(--color-border)] outline-none px-2 py-1.5 text-xs placeholder:text-[var(--color-ink-faint)]"
           />
           <div
             ref={listRef}
@@ -200,7 +200,7 @@ export function SearchableSelect({
             aria-multiselectable
           >
             {filtered.length === 0 ? (
-              <div className="px-2 py-2 font-mono text-[11px] text-[var(--color-ink-faint)]">
+              <div className="px-2 py-2 text-[11px] text-[var(--color-ink-faint)]">
                 {emptyHint}
               </div>
             ) : (
@@ -219,7 +219,7 @@ export function SearchableSelect({
                     aria-selected={selected}
                     onMouseEnter={() => setHighlight(i)}
                     className={[
-                      "group flex items-center gap-2 px-2 py-1.5 font-mono text-xs",
+                      "group flex items-center gap-2 px-2 py-1.5 text-xs",
                       isHighlighted
                         ? "bg-[var(--color-surface-elevated)]"
                         : "",
@@ -261,7 +261,7 @@ export function SearchableSelect({
                       )}
                       <span className="truncate flex-1">{o.label}</span>
                       {o.sub !== undefined && o.sub !== "" && (
-                        <span className="font-mono text-[10px] text-[var(--color-ink-faint)] tabular shrink-0">
+                        <span className="text-[10px] text-[var(--color-ink-faint)] tabular shrink-0">
                           {o.sub}
                         </span>
                       )}

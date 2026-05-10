@@ -88,7 +88,7 @@ export const ru: Dict = {
   "search.shift_multi_kind": "удерживай shift/cmd/ctrl для мульти-выбора",
   "search.show_superseded": "показать отменённые",
   "search.empty_tip":
-    "пусто. попробуйте другую форму слова — морфология pymorphy3 развёрнута, но редкие/составные слова могут не совпасть.",
+    "Ничего не найдено.",
   "search.results_one": "{count} запись",
   "search.results_few": "{count} записи",
   "search.results_many": "{count} записей",

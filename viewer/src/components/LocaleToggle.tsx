@@ -4,7 +4,7 @@ export function LocaleToggle() {
   const [locale, setLocale] = useLocale();
   return (
     <div
-      className="flex items-center font-mono text-[10px] uppercase tracking-wider"
+      className="flex items-center text-[10px] uppercase tracking-wider"
       role="radiogroup"
       aria-label="locale"
     >

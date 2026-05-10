@@ -64,7 +64,7 @@ export function ContextMenu({ x, y, items, onClose }: Props) {
               onClose();
             }
           }}
-          className="block w-full text-left px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-[var(--color-ink-dim)] hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[var(--color-ink-dim)] transition-colors"
+          className="block w-full text-left px-3 py-1.5 text-xs uppercase tracking-wider text-[var(--color-ink-dim)] hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[var(--color-ink-dim)] transition-colors"
         >
           {it.label}
         </button>

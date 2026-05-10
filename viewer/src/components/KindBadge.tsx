@@ -11,7 +11,7 @@ export function KindBadge({ kind, size = "sm" }: Props) {
   return (
     <span
       className={[
-        "inline-flex items-center gap-1.5 font-mono uppercase tracking-wider",
+        "inline-flex items-center gap-1.5 uppercase tracking-wider",
         size === "sm" ? "text-[10px]" : "text-xs",
       ].join(" ")}
       style={{ color: kindColor(kind) }}

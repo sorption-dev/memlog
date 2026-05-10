@@ -88,7 +88,7 @@ export const en: Dict = {
   "search.shift_multi_kind": "hold shift/cmd/ctrl to select multiple",
   "search.show_superseded": "show superseded",
   "search.empty_tip":
-    "nothing. try another form of the word — pymorphy3 morphology is active, but rare or compound words may not match.",
+    "Nothing matches your query.",
   "search.results_one": "{count} result",
   "search.results_other": "{count} results",
 

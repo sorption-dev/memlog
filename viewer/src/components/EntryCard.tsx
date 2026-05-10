@@ -69,11 +69,11 @@ export function EntryCard({ hit, dense }: Props) {
       className="group block border-t border-[var(--color-border)] py-3 -mx-2 px-2 hover:bg-[var(--color-surface)]/40 transition-colors"
     >
       <div className="flex items-baseline gap-3">
-        <span className="font-mono text-[11px] text-[var(--color-ink-faint)] tabular w-10">
+        <span className="text-[11px] text-[var(--color-ink-faint)] tabular w-10">
           #{hit.id}
         </span>
         <KindBadge kind={hit.kind} />
-        <span className="font-mono text-[11px] text-[var(--color-ink-faint)] tabular ml-auto">
+        <span className="text-[11px] text-[var(--color-ink-faint)] tabular ml-auto">
           {fmtRelative(hit.ts, locale)}
         </span>
       </div>
@@ -91,7 +91,7 @@ export function EntryCard({ hit, dense }: Props) {
             <button
               type="button"
               onClick={goToSession}
-              className="font-mono text-[11px] text-[var(--color-ink-faint)] hover:text-[var(--color-accent)] transition-colors"
+              className="text-[11px] text-[var(--color-ink-faint)] hover:text-[var(--color-accent)] transition-colors"
             >
               {hit.session_id}
             </button>

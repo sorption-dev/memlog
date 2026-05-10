@@ -74,7 +74,7 @@ export function WritePage() {
 
   return (
     <div className="px-10 py-10 max-w-3xl mx-auto">
-      <div className="font-mono text-[11px] uppercase tracking-wider text-[var(--color-ink-faint)]">
+      <div className="text-[11px] uppercase tracking-wider text-[var(--color-ink-faint)]">
         {t("write.overline")}
       </div>
       <h1 className="mt-1 text-4xl font-sans tracking-tight display-rule">
@@ -132,7 +132,7 @@ export function WritePage() {
             value={tagsRaw}
             onChange={(e) => setTagsRaw(e.target.value)}
             placeholder={t("write.tags_placeholder")}
-            className="mt-2 w-full bg-transparent border-b border-[var(--color-border)] focus:border-[var(--color-accent)] outline-none py-1 font-mono text-sm"
+            className="mt-2 w-full bg-transparent border-b border-[var(--color-border)] focus:border-[var(--color-accent)] outline-none py-1 text-sm"
           />
         </div>
         <div>
@@ -141,7 +141,7 @@ export function WritePage() {
             value={sessionId}
             onChange={(e) => setSessionId(e.target.value)}
             placeholder={t("write.session_placeholder")}
-            className="mt-2 w-full bg-transparent border-b border-[var(--color-border)] focus:border-[var(--color-accent)] outline-none py-1 font-mono text-sm"
+            className="mt-2 w-full bg-transparent border-b border-[var(--color-border)] focus:border-[var(--color-accent)] outline-none py-1 text-sm"
           />
         </div>
       </div>
@@ -154,19 +154,19 @@ export function WritePage() {
             onClick={() =>
               setLinks((ls) => [...ls, { to_id: 0, relation: "depends_on" }])
             }
-            className="font-mono text-[11px] uppercase tracking-wider text-[var(--color-ink-dim)] hover:text-[var(--color-accent)]"
+            className="text-[11px] uppercase tracking-wider text-[var(--color-ink-dim)] hover:text-[var(--color-accent)]"
           >
             + {t("action.add")}
           </button>
         </div>
         {links.length === 0 ? (
-          <div className="mt-2 font-mono text-[11px] text-[var(--color-ink-faint)]">
+          <div className="mt-2 text-[11px] text-[var(--color-ink-faint)]">
             {t("write.links_hint")}
           </div>
         ) : (
           <ul className="mt-2 flex flex-col gap-2">
             {links.map((l, i) => (
-              <li key={i} className="flex items-center gap-2 font-mono text-xs">
+              <li key={i} className="flex items-center gap-2 text-xs">
                 <span className="text-[var(--color-ink-faint)]">{t("write.this")}</span>
                 <select
                   value={l.relation}
@@ -226,11 +226,11 @@ export function WritePage() {
           type="button"
           disabled={busy}
           onClick={() => void submit()}
-          className="px-4 py-2 bg-[var(--color-accent)] text-[var(--color-bg)] font-mono text-xs uppercase tracking-widest rounded-[3px] hover:bg-[var(--color-accent-dim)] disabled:opacity-50 transition-colors"
+          className="px-4 py-2 bg-[var(--color-accent)] text-[var(--color-bg)] text-xs uppercase tracking-widest rounded-[3px] hover:bg-[var(--color-accent-dim)] disabled:opacity-50 transition-colors"
         >
           {busy ? t("write.saving") : t("action.save")}
         </button>
-        <span className="font-mono text-[11px] text-[var(--color-ink-faint)]">
+        <span className="text-[11px] text-[var(--color-ink-faint)]">
           {t("write.shortcut_hint", { cmd: "⌘", enter: "↵" })
             .split(/(⌘|↵)/)
             .map((part, i) =>
@@ -253,7 +253,7 @@ export function WritePage() {
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <label className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
+    <label className="text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
       {children}
     </label>
   );

@@ -25,7 +25,7 @@ export function HomePage() {
   if (error) {
     return (
       <div className="px-10 py-16">
-        <div className="font-mono text-xs uppercase text-[var(--color-danger)]">
+        <div className="text-xs uppercase text-[var(--color-danger)]">
           {t("common.error")}
         </div>
         <pre className="mt-3 text-sm text-[var(--color-ink-dim)] whitespace-pre-wrap">
@@ -41,7 +41,7 @@ export function HomePage() {
       {stats && stats.byKind.length > 0 && (
         <section>
           <SectionTitle>{t("home.by_kind")}</SectionTitle>
-          <div className="mt-4 flex flex-wrap gap-4 font-mono text-xs">
+          <div className="mt-4 flex flex-wrap gap-4 text-xs">
             {stats.byKind.map((r) => (
               <Link
                 key={r.kind}
@@ -68,7 +68,7 @@ export function HomePage() {
             <SectionTitle>{t("home.projects")}</SectionTitle>
             <Link
               to="/projects"
-              className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-ink-faint)] hover:text-[var(--color-accent)] transition-colors"
+              className="text-[10px] uppercase tracking-wider text-[var(--color-ink-faint)] hover:text-[var(--color-accent)] transition-colors"
             >
               {t("home.all_projects")} →
             </Link>
@@ -85,7 +85,7 @@ export function HomePage() {
                   to={`/search?session_id=${encodeURIComponent(s.session_id ?? "")}`}
                   className="group relative flex flex-col justify-between border border-[var(--color-border)] rounded-[3px] p-3 min-h-[92px] hover:border-[var(--color-accent)] hover:bg-[var(--color-surface-elevated)] transition-colors"
                 >
-                  <div className="font-mono text-xs text-[var(--color-ink)] group-hover:text-[var(--color-accent)] leading-tight break-all line-clamp-2">
+                  <div className="text-xs text-[var(--color-ink)] group-hover:text-[var(--color-accent)] leading-tight break-all line-clamp-2">
                     {label}
                   </div>
                   <div className="mt-3">
@@ -95,7 +95,7 @@ export function HomePage() {
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <div className="mt-1.5 flex items-baseline justify-between font-mono text-[10px] tabular text-[var(--color-ink-faint)]">
+                    <div className="mt-1.5 flex items-baseline justify-between text-[10px] tabular text-[var(--color-ink-faint)]">
                       <span>
                         <span className="text-[var(--color-ink-dim)]">{s.n}</span>{" "}
                         {t("home.entries_short")}
@@ -114,11 +114,11 @@ export function HomePage() {
         <SectionTitle>{t("home.recent")}</SectionTitle>
         <div className="mt-2">
           {recent === null ? (
-            <div className="font-mono text-xs text-[var(--color-ink-faint)]">
+            <div className="text-xs text-[var(--color-ink-faint)]">
               {t("common.loading")}
             </div>
           ) : recent.length === 0 ? (
-            <div className="font-mono text-xs text-[var(--color-ink-faint)]">
+            <div className="text-xs text-[var(--color-ink-faint)]">
               {t("home.empty")}
             </div>
           ) : (
@@ -132,7 +132,7 @@ export function HomePage() {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
+    <div className="text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
       {children}
     </div>
   );

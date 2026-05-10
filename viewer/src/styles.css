@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@fontsource-variable/geist/index.css";
+@import "@fontsource-variable/Onest/index.css";
 @import "@fontsource-variable/geist-mono/index.css";
 
 /* Kill the webview's rubber-band / elastic overscroll everywhere. When
@@ -17,9 +17,9 @@ html, body, #root { overscroll-behavior: none; }
    -------------------------------------------------------------------------- */
 
 :root {
-  --font-sans: "Geist Variable", "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Onest Variable", "Onest", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --font-display: "Geist Variable", "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Onest Variable", "Onest", ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Dark palette (default) */

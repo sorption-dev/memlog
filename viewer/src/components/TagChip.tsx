@@ -14,7 +14,7 @@ export function TagChip({ tag, active, onClick }: Props) {
       onClick={onClick}
       disabled={!clickable}
       className={[
-        "inline-block font-mono text-[11px] px-1.5 py-0.5 rounded-[3px] border transition-colors",
+        "inline-block text-[11px] px-1.5 py-0.5 rounded-[3px] border transition-colors",
         active
           ? "border-[var(--color-accent)] text-[var(--color-accent)]"
           : "border-[var(--color-border)] text-[var(--color-ink-dim)]",

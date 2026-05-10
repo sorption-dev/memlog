@@ -150,7 +150,7 @@ export function EntryPage() {
   if (error) {
     return (
       <div className="px-10 py-16">
-        <div className="font-mono text-xs uppercase text-[var(--color-danger)]">
+        <div className="text-xs uppercase text-[var(--color-danger)]">
           {t("common.error")}
         </div>
         <pre className="mt-3 text-sm text-[var(--color-ink-dim)] whitespace-pre-wrap">
@@ -161,7 +161,7 @@ export function EntryPage() {
   }
   if (!entry) {
     return (
-      <div className="px-10 py-16 font-mono text-xs text-[var(--color-ink-faint)]">
+      <div className="px-10 py-16 text-xs text-[var(--color-ink-faint)]">
         {t("common.loading")}
       </div>
     );
@@ -173,8 +173,8 @@ export function EntryPage() {
 
   return (
     <div className="px-10 py-10 max-w-3xl mx-auto">
-      <div className="flex items-baseline gap-3 font-mono text-[11px] text-[var(--color-ink-faint)]">
-        <Link to="/" className="hover:text-[var(--color-ink)]">
+      <div className="flex items-baseline gap-3 text-[11px] text-[var(--color-ink-faint)]">
+        <Link to="/" className="hover:text-[var(--color-ink)] uppercase">
           {t("nav.home")}
         </Link>
         <span>/</span>
@@ -234,7 +234,7 @@ export function EntryPage() {
       <article className="mt-8">
         {isRedacted ? (
           <div
-            className="text-[var(--color-ink-faint)] font-mono italic"
+            className="text-[var(--color-ink-faint)] italic"
             style={{ maxWidth: "68ch" }}
           >
             {entry.body}
@@ -254,7 +254,7 @@ export function EntryPage() {
         )}
       </article>
 
-      <dl className="mt-10 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 font-mono text-[11px] border-t border-[var(--color-border)] pt-5">
+      <dl className="mt-10 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-[11px] border-t border-[var(--color-border)] pt-5">
         <dt className="uppercase tracking-wider text-[var(--color-ink-faint)]">
           {t("entry.when")}
         </dt>
@@ -278,7 +278,7 @@ export function EntryPage() {
                     setDraft((d) => (d ? { ...d, tagsRaw: e.target.value } : d))
                   }
                   placeholder={t("write.tags_placeholder")}
-                  className="w-full bg-transparent border-b border-[var(--color-border)] focus:border-[var(--color-accent)] outline-none py-1 font-mono text-[11px]"
+                  className="w-full bg-transparent border-b border-[var(--color-border)] focus:border-[var(--color-accent)] outline-none py-1 text-[11px]"
                 />
               ) : (
                 entry.tags.map((tag) => (
@@ -313,7 +313,7 @@ export function EntryPage() {
 
       {(entry.outgoing.length > 0 || entry.incoming.length > 0) && (
         <section className="mt-10">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
+          <div className="text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
             {t("entry.relations")}
           </div>
 
@@ -344,7 +344,7 @@ export function EntryPage() {
         </section>
       )}
 
-      <section className="mt-12 flex items-center flex-wrap gap-3 border-t border-[var(--color-border)] pt-5 font-mono text-xs">
+      <section className="mt-12 flex items-center flex-wrap gap-3 border-t border-[var(--color-border)] pt-5 text-xs">
         {editing ? (
           <>
             <button
@@ -448,7 +448,7 @@ function NeighborList({
   const t = useT();
   return (
     <div className="mt-4">
-      <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
+      <div className="text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
         {title}
       </div>
       <ul className="mt-1">
@@ -458,10 +458,10 @@ function NeighborList({
               to={`/entry/${r.id}`}
               className="group flex items-baseline gap-3 border-b border-[var(--color-border)] py-2 hover:bg-[var(--color-surface)]/40 -mx-2 px-2 transition-colors"
             >
-              <span className="font-mono text-[11px] text-[var(--color-ink-faint)] tabular w-10">
+              <span className="text-[11px] text-[var(--color-ink-faint)] tabular w-10">
                 #{r.id}
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-ink-faint)] w-28 shrink-0">
+              <span className="text-[10px] uppercase tracking-wider text-[var(--color-ink-faint)] w-28 shrink-0">
                 {t(`relation.${r.relation}`)}
               </span>
               <KindBadge kind={r.kind} />

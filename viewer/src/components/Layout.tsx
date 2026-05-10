@@ -41,7 +41,7 @@ function applyZoom(next: number): void {
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
-    "relative px-3 py-1.5 font-mono text-xs uppercase tracking-wider rounded-[3px] transition-colors",
+    "relative px-3 py-1.5 text-xs uppercase font-medium tracking-wider rounded-[3px] transition-colors",
     isActive
       ? "text-[var(--color-accent)]"
       : "text-[var(--color-ink-dim)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-elevated)]",
@@ -145,7 +145,7 @@ function LayoutInner() {
         <div className="w-48 h-full px-5 py-6 flex flex-col gap-8 overflow-y-auto">
         <NavLink to="/" className="block leading-none">
           <div className="font-sans text-xl tracking-tight">memlog</div>
-          <div className="font-mono text-[10px] text-[var(--color-ink-faint)] mt-1">
+          <div className="text-[10px] text-[var(--color-ink-faint)] mt-1">
             {t("layout.tagline")}
           </div>
         </NavLink>
@@ -155,7 +155,7 @@ function LayoutInner() {
             to="/write"
             className={({ isActive }) =>
               [
-                "flex items-center gap-2 px-2.5 py-1.5 font-mono text-xs uppercase tracking-wider rounded-[3px] transition-colors border",
+                "flex items-center gap-2 px-2.5 py-1.5 text-xs uppercase tracking-wider rounded-[3px] transition-colors border",
                 isActive
                   ? "bg-[var(--color-accent)] border-[var(--color-accent)] text-[var(--color-bg)]"
                   : "border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)]",
@@ -186,7 +186,7 @@ function LayoutInner() {
         </nav>
 
         <div className="mt-auto flex flex-col gap-4 text-[var(--color-ink-faint)]">
-          <div className="font-mono text-[10px] text-[var(--color-ink-faint)]">
+          <div className="text-[10px] text-[var(--color-ink-faint)]">
             {t("layout.kbd_search", {
               key: "⟨/⟩",
             })

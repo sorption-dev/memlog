@@ -43,7 +43,7 @@ export function StatsPage() {
   if (error) {
     return (
       <div className="px-10 py-16">
-        <div className="font-mono text-xs uppercase text-[var(--color-danger)]">
+        <div className="text-xs uppercase text-[var(--color-danger)]">
           {t("common.error")}
         </div>
         <pre className="mt-3 text-sm text-[var(--color-ink-dim)] whitespace-pre-wrap">
@@ -56,7 +56,7 @@ export function StatsPage() {
   return (
     <div className="px-10 py-10 max-w-5xl mx-auto">
       <header className="mb-10">
-        <div className="font-mono text-[11px] uppercase tracking-wider text-[var(--color-ink-faint)]">
+        <div className="text-[11px] uppercase tracking-wider text-[var(--color-ink-faint)]">
           {t("stats.overline")}
         </div>
         <h1 className="mt-1 text-4xl font-sans tracking-tight display-rule">
@@ -96,7 +96,7 @@ export function StatsPage() {
       </section>
 
       {/* Period controls */}
-      <section className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-xs">
+      <section className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs">
         <Tabs
           label={t("stats.period_label")}
           value={period}
@@ -124,7 +124,7 @@ export function StatsPage() {
         {activity ? (
           <ActivityChart report={activity} metric={metric} />
         ) : (
-          <div className="mt-4 h-48 font-mono text-xs text-[var(--color-ink-faint)]">
+          <div className="mt-4 h-48 text-xs text-[var(--color-ink-faint)]">
             {t("common.loading")}
           </div>
         )}
@@ -180,7 +180,7 @@ function ActivityChart({
 
   return (
     <div className="mt-4">
-      <div className="flex items-baseline justify-between font-mono text-[11px] text-[var(--color-ink-faint)] tabular">
+      <div className="flex items-baseline justify-between text-[11px] text-[var(--color-ink-faint)] tabular">
         <span>
           {t("stats.chart_total", {
             n: total,
@@ -215,7 +215,7 @@ function ActivityChart({
                 ].join(" ")}
                 style={{ height: `${pct}%` }}
               />
-              <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[var(--color-surface-solid)] border border-[var(--color-border-strong)] rounded-[3px] px-1.5 py-0.5 font-mono text-[10px] tabular opacity-0 group-hover:opacity-100 transition-opacity z-10">
+              <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[var(--color-surface-solid)] border border-[var(--color-border-strong)] rounded-[3px] px-1.5 py-0.5 text-[10px] tabular opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 <span className="text-[var(--color-ink-faint)] mr-1">
                   {tooltipFor(d.bucket)}
                 </span>
@@ -229,7 +229,7 @@ function ActivityChart({
                 </span>
               </div>
               {shouldLabel(i, report.buckets.length, report.granularity) && (
-                <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 font-mono text-[9px] text-[var(--color-ink-faint)] tabular whitespace-nowrap">
+                <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 text-[9px] text-[var(--color-ink-faint)] tabular whitespace-nowrap">
                   {labelFor(d.bucket)}
                 </div>
               )}
@@ -265,7 +265,7 @@ function KindDistribution({ activity }: { activity: ActivityReport }) {
     <div>
       <SectionTitle>{t("stats.by_kind")}</SectionTitle>
       {activity.byKind.length === 0 ? (
-        <div className="mt-4 font-mono text-xs text-[var(--color-ink-faint)]">
+        <div className="mt-4 text-xs text-[var(--color-ink-faint)]">
           {t("stats.empty_period")}
         </div>
       ) : (
@@ -274,7 +274,7 @@ function KindDistribution({ activity }: { activity: ActivityReport }) {
             <li key={k.kind} className="flex items-center gap-3">
               <Link
                 to={`/search?kind=${k.kind}`}
-                className="font-mono text-[11px] uppercase tracking-wider w-24 shrink-0 hover:text-[var(--color-accent)]"
+                className="text-[11px] uppercase tracking-wider w-24 shrink-0 hover:text-[var(--color-accent)]"
                 style={{ color: kindColor(k.kind) }}
               >
                 {t(`kind.${k.kind}`)}
@@ -288,7 +288,7 @@ function KindDistribution({ activity }: { activity: ActivityReport }) {
                   }}
                 />
               </div>
-              <span className="font-mono text-[11px] tabular text-[var(--color-ink-dim)] w-8 text-right">
+              <span className="text-[11px] tabular text-[var(--color-ink-dim)] w-8 text-right">
                 {k.n}
               </span>
             </li>
@@ -306,7 +306,7 @@ function TopSessions({ activity }: { activity: ActivityReport }) {
     <div>
       <SectionTitle>{t("stats.top_sessions")}</SectionTitle>
       {rows.length === 0 ? (
-        <div className="mt-4 font-mono text-xs text-[var(--color-ink-faint)]">
+        <div className="mt-4 text-xs text-[var(--color-ink-faint)]">
           {t("stats.empty_period")}
         </div>
       ) : (
@@ -317,13 +317,13 @@ function TopSessions({ activity }: { activity: ActivityReport }) {
                 to={`/search?session_id=${encodeURIComponent(s.session_id ?? "")}`}
                 className="group grid grid-cols-[1fr_auto_auto] gap-x-4 items-baseline py-1.5"
               >
-                <span className="font-mono text-xs text-[var(--color-ink-dim)] group-hover:text-[var(--color-accent)] truncate">
+                <span className="text-xs text-[var(--color-ink-dim)] group-hover:text-[var(--color-accent)] truncate">
                   {s.session_id}
                 </span>
-                <span className="font-mono text-[11px] tabular text-[var(--color-ink-faint)]">
+                <span className="text-[11px] tabular text-[var(--color-ink-faint)]">
                   {s.n} {t("stats.unit_entries")}
                 </span>
-                <span className="font-mono text-[11px] tabular text-[var(--color-ink-faint)]">
+                <span className="text-[11px] tabular text-[var(--color-ink-faint)]">
                   {s.chars.toLocaleString()} {t("stats.unit_chars")}
                 </span>
               </Link>
@@ -381,12 +381,12 @@ function Summary({
 }) {
   return (
     <div className="border-b border-r last:border-r-0 border-[var(--color-border)] px-4 py-5 -ml-px first:ml-0">
-      <div className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-ink-faint)]">
+      <div className="text-[10px] uppercase tracking-wider text-[var(--color-ink-faint)]">
         {label}
       </div>
       <div className="mt-2 font-sans text-2xl tracking-tight tabular">{value}</div>
       {sub && (
-        <div className="mt-1 font-mono text-[11px] text-[var(--color-ink-faint)] tabular">
+        <div className="mt-1 text-[11px] text-[var(--color-ink-faint)] tabular">
           {sub}
         </div>
       )}
@@ -396,7 +396,7 @@ function Summary({
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
+    <div className="text-[10px] uppercase tracking-widest text-[var(--color-ink-faint)]">
       {children}
     </div>
   );
