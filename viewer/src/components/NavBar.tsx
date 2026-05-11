@@ -1,27 +1,26 @@
 /**
- * In-content back/forward bar.
- *
- * Lives at the top of <main>. Shows the two arrows only when they'd do
- * something (history idx > 0 / idx < length-1). Wires up the full set of
- * browser-like navigation inputs so the app behaves the same way as a
- * normal window:
+ * Browser-like back/forward for the app.
  *
  *   · keyboard — ⌘[/⌘] (macOS), Alt+←/→ (everywhere)
  *   · mouse    — side buttons X1/X2 (button codes 3/4)
- *   · swipe    — horizontal wheel deltas from touchpads (macOS trackpad
- *                two-finger, Windows precision touchpad). Accumulated over
- *                a short window with a cooldown so a single gesture fires
- *                at most once.
+ *   · swipe    — horizontal wheel deltas from touchpads. Accumulated over
+ *                a short window; once a gesture fires, further fires are
+ *                suppressed until the deltaX stream pauses (the user lifts
+ *                their fingers) — a fixed cooldown doesn't beat the inertia
+ *                tail of a fast flick.
  *
- * React Router v6's BrowserRouter stores a 0-based position at
+ * React Router v6+'s BrowserRouter stores a 0-based position at
  * `window.history.state.idx`, so we don't have to maintain a parallel
  * stack to know whether forward is available.
+ *
+ * The visible buttons live in the TitleBar (see HistoryNavButtons below).
+ * All global listeners are owned by `useHistoryNavListeners`, attached
+ * once from Layout — the buttons are pure UI.
  */
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const SWIPE_TRIGGER_PX = 80;
-const SWIPE_COOLDOWN_MS = 600;
 const SWIPE_IDLE_RESET_MS = 120;
 
 function isEditable(el: EventTarget | null): boolean {
@@ -33,11 +32,6 @@ function isEditable(el: EventTarget | null): boolean {
   );
 }
 
-/** Climb from `el` to `stop`; return true if any ancestor can actually
- *  scroll horizontally (scrollWidth > clientWidth and overflow-x lets it).
- *  We use this to yield back/forward swipes to a horizontally-scrollable
- *  child (e.g. a wide code block or table) — the browser's default
- *  horizontal scroll happens first. */
 function hasHorizontalScrollAncestor(
   el: HTMLElement | null,
   stop: HTMLElement,
@@ -53,21 +47,42 @@ function hasHorizontalScrollAncestor(
   return false;
 }
 
-export function NavBar({ scrollRoot }: { scrollRoot: HTMLElement | null }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  // Re-read on every location change; reading inline keeps us in sync
-  // with the actual window.history (state gets replaced on push/replace).
-  void location;
+function readCans(): { canGoBack: boolean; canGoForward: boolean } {
   const idx = (window.history.state?.idx as number | undefined) ?? 0;
-  const canGoBack = idx > 0;
-  const canGoForward = idx < window.history.length - 1;
+  return {
+    canGoBack: idx > 0,
+    canGoForward: idx < window.history.length - 1,
+  };
+}
 
-  // Keep handlers stable but read latest can-flags via ref, so adding an
-  // event listener once is enough.
-  const goRef = useRef({ canGoBack, canGoForward, navigate });
-  goRef.current = { canGoBack, canGoForward, navigate };
+/** Returns current can-flags; re-renders on location changes. */
+export function useHistoryNav() {
+  const location = useLocation();
+  void location;
+  const navigate = useNavigate();
+  const { canGoBack, canGoForward } = readCans();
+  return {
+    canGoBack,
+    canGoForward,
+    goBack: () => {
+      if (readCans().canGoBack) navigate(-1);
+    },
+    goForward: () => {
+      if (readCans().canGoForward) navigate(1);
+    },
+  };
+}
+
+/**
+ * Attach window-level keyboard + mouse-button + wheel handlers that drive
+ * back/forward. Call once from a stable parent (Layout). Reads the latest
+ * can-flags from `window.history.state` at fire time so we don't need to
+ * subscribe.
+ */
+export function useHistoryNavListeners(scrollRoot: HTMLElement | null): void {
+  const navigate = useNavigate();
+  const navRef = useRef(navigate);
+  navRef.current = navigate;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -80,19 +95,19 @@ export function NavBar({ scrollRoot }: { scrollRoot: HTMLElement | null }) {
         (e.altKey && e.code === "ArrowRight");
       if (back) {
         e.preventDefault();
-        if (goRef.current.canGoBack) goRef.current.navigate(-1);
+        if (readCans().canGoBack) navRef.current(-1);
       } else if (fwd) {
         e.preventDefault();
-        if (goRef.current.canGoForward) goRef.current.navigate(1);
+        if (readCans().canGoForward) navRef.current(1);
       }
     };
     const onMouse = (e: MouseEvent) => {
       if (e.button === 3) {
         e.preventDefault();
-        if (goRef.current.canGoBack) goRef.current.navigate(-1);
+        if (readCans().canGoBack) navRef.current(-1);
       } else if (e.button === 4) {
         e.preventDefault();
-        if (goRef.current.canGoForward) goRef.current.navigate(1);
+        if (readCans().canGoForward) navRef.current(1);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -103,61 +118,67 @@ export function NavBar({ scrollRoot }: { scrollRoot: HTMLElement | null }) {
     };
   }, []);
 
-  // Horizontal swipe. We attach to scrollRoot (the <main>) so the wheel
-  // event only fires from the content pane, not the sidebar. Accumulate
-  // deltaX while the gesture is active; fire once we cross the threshold,
-  // then enter a cooldown so the momentum tail doesn't fire a second nav.
   useEffect(() => {
     if (!scrollRoot) return;
     let accum = 0;
-    let cooldownUntil = 0;
     let lastEventAt = 0;
+    // Latched after a successful fire — cleared only after a real pause
+    // in the deltaX stream (user lifted fingers). A time-based cooldown
+    // wasn't enough: on a fast flick the inertia tail keeps producing
+    // deltaX well past the cooldown and triggered a second nav.
+    let firedInGesture = false;
 
     const onWheel = (e: WheelEvent) => {
-      // Only touchpad/continuous gestures produce sustained horizontal deltas.
-      // If vertical movement dominates, this is a normal scroll — bail.
+      const now = performance.now();
+      // A gap between events ≥ idle threshold ends the current gesture.
+      if (now - lastEventAt > SWIPE_IDLE_RESET_MS) {
+        accum = 0;
+        firedInGesture = false;
+      }
+      lastEventAt = now;
+
+      // Vertical-dominant motion is a normal scroll — leave it alone.
       if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) {
         accum = 0;
         return;
       }
-      // Yield to content that actually wants horizontal scroll.
+      // Yield to content that wants horizontal scroll (wide tables / pre).
       if (hasHorizontalScrollAncestor(e.target as HTMLElement, scrollRoot)) {
         accum = 0;
         return;
       }
+      if (firedInGesture) return;
 
-      const now = performance.now();
-      if (now < cooldownUntil) return;
-      // Reset accumulator if this delta arrived after a pause (new gesture).
-      if (now - lastEventAt > SWIPE_IDLE_RESET_MS) accum = 0;
-      lastEventAt = now;
       accum += e.deltaX;
-
       if (Math.abs(accum) < SWIPE_TRIGGER_PX) return;
+
       const direction = accum > 0 ? 1 : -1;
+      firedInGesture = true;
       accum = 0;
-      cooldownUntil = now + SWIPE_COOLDOWN_MS;
-      if (direction < 0 && goRef.current.canGoBack)
-        goRef.current.navigate(-1);
-      else if (direction > 0 && goRef.current.canGoForward)
-        goRef.current.navigate(1);
+      if (direction < 0 && readCans().canGoBack) navRef.current(-1);
+      else if (direction > 0 && readCans().canGoForward) navRef.current(1);
     };
 
     scrollRoot.addEventListener("wheel", onWheel, { passive: true });
     return () => scrollRoot.removeEventListener("wheel", onWheel);
   }, [scrollRoot]);
+}
 
+/** Compact back/forward button pair. Designed to live in the title bar. */
+export function HistoryNavButtons() {
+  const { canGoBack, canGoForward, goBack, goForward } = useHistoryNav();
   if (!canGoBack && !canGoForward) return null;
 
   const btn =
-    "h-7 w-7 flex items-center justify-center rounded-[3px] text-[var(--color-ink-dim)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-elevated)] transition-colors disabled:opacity-30 disabled:hover:text-[var(--color-ink-dim)] disabled:hover:bg-transparent disabled:cursor-default";
+    "h-full w-7 flex items-center justify-center text-[var(--color-ink-faint)] hover:bg-[var(--color-surface-elevated)] hover:text-[var(--color-ink)] transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[var(--color-ink-faint)] disabled:cursor-default";
 
   return (
-    <div className="sticky top-0 z-10 bg-[var(--color-bg)]/90 backdrop-blur-sm px-10 py-2 flex items-center gap-1">
+    <div className="flex items-stretch border-l border-[var(--color-border)]">
       <button
         type="button"
         aria-label="back"
-        onClick={() => navigate(-1)}
+        title="back"
+        onClick={goBack}
         disabled={!canGoBack}
         className={btn}
       >
@@ -174,7 +195,8 @@ export function NavBar({ scrollRoot }: { scrollRoot: HTMLElement | null }) {
       <button
         type="button"
         aria-label="forward"
-        onClick={() => navigate(1)}
+        title="forward"
+        onClick={goForward}
         disabled={!canGoForward}
         className={btn}
       >

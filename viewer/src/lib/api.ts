@@ -51,6 +51,7 @@ export const api = {
     },
   ) => call<Entry>("update", { id, patch }),
   redact: (id: number) => call<Entry>("redact", { id }),
+  delete: (id: number) => call<{ ok: true }>("delete", { id }),
   entrySource: (id: number) => call<ConversationView>("entry_source", { id }),
   link: (from_id: number, to_id: number, relation: Relation) =>
     call<{ ok: true }>("link", { from_id, to_id, relation }),

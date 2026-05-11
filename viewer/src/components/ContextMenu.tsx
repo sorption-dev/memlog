@@ -45,11 +45,18 @@ export function ContextMenu({ x, y, items, onClose }: Props) {
   const left = vw && x + W > vw ? Math.max(8, vw - W - 8) : x;
   const top = vh && y + H > vh ? Math.max(8, vh - H - 8) : y;
 
+  // The menu is rendered through a portal into document.body, but React's
+  // synthetic event system still bubbles events through the *component*
+  // tree — so a click on a menu item would reach the EntryCard's onClick
+  // and navigate the parent window. Stop both onClick and onMouseDown
+  // at the menu root.
   return createPortal(
     <div
       ref={ref}
       role="menu"
       style={{ position: "fixed", left, top, minWidth: W, zIndex: 1000 }}
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
       className="rounded-[3px] border border-[var(--color-border-strong)] bg-[var(--color-surface-elevated)] py-1 shadow-lg"
     >
       {items.map((it) => (
@@ -58,7 +65,8 @@ export function ContextMenu({ x, y, items, onClose }: Props) {
           type="button"
           role="menuitem"
           disabled={it.disabled}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             if (!it.disabled) {
               it.onSelect();
               onClose();

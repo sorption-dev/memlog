@@ -4,7 +4,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useT } from "../i18n";
 import { SidebarProvider, useSidebar } from "../lib/sidebar";
 import { LocaleToggle } from "./LocaleToggle";
-import { NavBar } from "./NavBar";
+import { useHistoryNavListeners } from "./NavBar";
 import { ThemeToggle } from "./ThemeToggle";
 import { TitleBar } from "./TitleBar";
 
@@ -60,6 +60,10 @@ function LayoutInner() {
   const t = useT();
   const { collapsed: sidebarCollapsed, toggle: toggleSidebar } = useSidebar();
   const [mainEl, setMainEl] = useState<HTMLElement | null>(null);
+
+  // Global keyboard / mouse-button / touchpad-swipe listeners for
+  // history back/forward. The visible buttons live in the TitleBar.
+  useHistoryNavListeners(mainEl);
 
   useEffect(() => {
     // Restore saved zoom on mount. Tauri's webview has no built-in ⌘+/⌘-
@@ -215,7 +219,6 @@ function LayoutInner() {
         ref={setMainEl}
         className="flex-1 min-w-0 overflow-y-auto overscroll-none"
       >
-        <NavBar scrollRoot={mainEl} />
         <Outlet />
       </main>
       </div>

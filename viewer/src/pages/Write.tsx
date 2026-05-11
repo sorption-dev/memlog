@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { KindBadge } from "../components/KindBadge";
+import { ShortcutHint } from "../components/ShortcutHint";
 import { useT } from "../i18n";
 import { api } from "../lib/api";
 import { KINDS } from "../lib/types";
@@ -231,20 +232,7 @@ export function WritePage() {
           {busy ? t("write.saving") : t("action.save")}
         </button>
         <span className="text-[11px] text-[var(--color-ink-faint)]">
-          {t("write.shortcut_hint", { cmd: "⌘", enter: "↵" })
-            .split(/(⌘|↵)/)
-            .map((part, i) =>
-              part === "⌘" || part === "↵" ? (
-                <kbd
-                  key={i}
-                  className="border border-[var(--color-border)] rounded px-1"
-                >
-                  {part}
-                </kbd>
-              ) : (
-                <span key={i}>{part}</span>
-              ),
-            )}
+          <ShortcutHint action="↵" />
         </span>
       </div>
     </div>

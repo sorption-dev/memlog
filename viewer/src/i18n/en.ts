@@ -106,6 +106,16 @@ export const en: Dict = {
   "entry.confirm_redact_title": "Redact entry #{id}?",
   "entry.confirm_redact_body":
     "Text and tags will be replaced with [redacted], but graph edges are preserved.",
+  "entry.confirm_delete_title": "Permanently delete entry #{id}?",
+  "entry.confirm_delete_body":
+    "The entry and all its links will be removed from the database. This cannot be undone — if you want to keep the graph edges, use “redact” instead.",
+  "entry.tip_edit": "modify this entry's text in place",
+  "entry.tip_supersede":
+    "write a replacement entry — the old one is marked “superseded” but kept with all its links",
+  "entry.tip_redact":
+    "replace text and tags with [redacted] — id, timestamp and links are preserved",
+  "entry.tip_delete":
+    "permanently remove the entry and all its links — cannot be undone",
 
   // Conversation viewer
   "conv.show": "show conversation",

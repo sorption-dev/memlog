@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useSidebar } from "../lib/sidebar";
 import { useT } from "../i18n";
+import { HistoryNavButtons } from "./NavBar";
 
 const isMac =
   typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -59,6 +60,7 @@ export function TitleBar() {
           collapsed ? t("sidebar.expand") : t("sidebar.collapse")
         }
       />
+      <HistoryNavButtons />
       <div data-tauri-drag-region className="flex-1" />
       {!isMac && <WindowControls maximized={maximized} />}
     </div>

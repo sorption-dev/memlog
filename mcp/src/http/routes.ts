@@ -145,6 +145,16 @@ export function buildRoutes(ctx: RouteContext): Route[] {
       },
     },
     {
+      method: "DELETE",
+      match: /^\/api\/entry\/(\d+)\/?$/,
+      handle: (_req, res, params) => {
+        const id = Number(params.id);
+        const ok = repo.deleteEntry(db, id);
+        if (!ok) return sendJson(res, 404, { error: `entry #${id} not found` });
+        sendJson(res, 200, { ok: true });
+      },
+    },
+    {
       method: "POST",
       match: /^\/api\/link\/?$/,
       handle: async (req, res) => {

@@ -72,6 +72,13 @@ export function buildHandlers(db: DB, dbPath: string): HandlerMap {
       if (!entry) throw new Error(`entry #${id} not found`);
       return entry;
     },
+    delete: (p) => {
+      const id = Number(p.id);
+      if (!Number.isFinite(id)) throw new Error("id must be a number");
+      const ok = repo.deleteEntry(db, id);
+      if (!ok) throw new Error(`entry #${id} not found`);
+      return { ok: true };
+    },
     link: (p) => {
       const { from_id, to_id, relation } = p as {
         from_id: number;

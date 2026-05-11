@@ -227,6 +227,20 @@ export function redactEntry(db: DB, id: number): Entry | null {
   return getEntry(db, id);
 }
 
+/**
+ * Hard-delete an entry. Cascades to `links` via ON DELETE CASCADE; the FTS
+ * index is cleaned up by the `entries_ad` trigger. Irreversible — callers
+ * should confirm with the user. Prefer `redactEntry` when graph edges and
+ * history matter; this is for "I wrote it by mistake, get rid of it".
+ */
+export function deleteEntry(db: DB, id: number): boolean {
+  const existing = getEntry(db, id);
+  if (!existing) return false;
+  const info = db.prepare(`DELETE FROM entries WHERE id = ?`).run(id);
+  log.info("deleted", { id, kind: existing.kind, changes: info.changes });
+  return info.changes > 0;
+}
+
 export interface Stats {
   dbPath: string;
   dbSizeBytes: number;

@@ -4,6 +4,7 @@ import { ConfirmDialog } from "../components/ConfirmDialog";
 import { ConversationView } from "../components/ConversationView";
 import { KindBadge } from "../components/KindBadge";
 import { MarkdownView } from "../components/MarkdownView";
+import { ShortcutHint } from "../components/ShortcutHint";
 import { TagChip } from "../components/TagChip";
 import { useT, useLocale } from "../i18n";
 import { api } from "../lib/api";
@@ -54,6 +55,7 @@ export function EntryPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [draft, setDraft] = useState<EditDraft | null>(null);
 
@@ -93,6 +95,20 @@ export function EntryPage() {
     }
   };
 
+  const doDelete = async () => {
+    if (!entry) return;
+    setConfirmDeleteOpen(false);
+    setBusy(true);
+    setActionError(null);
+    try {
+      await api.delete(entry.id);
+      navigate("/", { replace: true });
+    } catch (err) {
+      setActionError((err as Error).message);
+      setBusy(false);
+    }
+  };
+
   const beginEdit = () => {
     if (!entry) return;
     setDraft(draftFrom(entry));
@@ -127,11 +143,14 @@ export function EntryPage() {
     }
   };
 
-  // ⌘S while editing → save, Esc → cancel.
+  // ⌘S while editing → save, Esc → cancel. Use e.code (physical key) so
+  // the shortcut works on any keyboard layout — on a Russian layout
+  // pressing S would emit "ы" via e.key, but the physical key still
+  // reports "KeyS".
   useEffect(() => {
     if (!draft) return;
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+      if ((e.metaKey || e.ctrlKey) && e.code === "KeyS") {
         e.preventDefault();
         void saveEdit();
       } else if (e.key === "Escape") {
@@ -215,6 +234,50 @@ export function EntryPage() {
         )}
       </div>
 
+      {!editing && (
+        <section className="mt-5 flex items-center flex-wrap gap-2 text-xs">
+          <button
+            type="button"
+            onClick={beginEdit}
+            disabled={busy || isRedacted}
+            title={t("entry.tip_edit")}
+            className="px-3 py-1.5 border border-[var(--color-border)] hover:border-[var(--color-accent)] text-[var(--color-ink-dim)] hover:text-[var(--color-accent)] disabled:opacity-30 disabled:hover:border-[var(--color-border)] disabled:hover:text-[var(--color-ink-dim)] uppercase tracking-wider transition-colors rounded-[3px]"
+          >
+            {t("action.edit")}
+          </button>
+          <Link
+            to={`/write?supersedes=${entry.id}`}
+            title={t("entry.tip_supersede")}
+            className="px-3 py-1.5 border border-[var(--color-border)] hover:border-[var(--color-accent)] text-[var(--color-ink-dim)] hover:text-[var(--color-accent)] uppercase tracking-wider transition-colors rounded-[3px]"
+          >
+            {t("action.supersede")}
+          </Link>
+          <button
+            type="button"
+            onClick={() => setConfirmOpen(true)}
+            disabled={busy || isRedacted}
+            title={isRedacted ? t("entry.already_redacted") : t("entry.tip_redact")}
+            className="px-3 py-1.5 border border-[var(--color-border)] hover:border-[var(--color-danger)] text-[var(--color-ink-dim)] hover:text-[var(--color-danger)] disabled:opacity-30 disabled:hover:border-[var(--color-border)] disabled:hover:text-[var(--color-ink-dim)] uppercase tracking-wider transition-colors rounded-[3px]"
+          >
+            {isRedacted ? t("entry.already_redacted") : t("action.redact")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmDeleteOpen(true)}
+            disabled={busy}
+            title={t("entry.tip_delete")}
+            className="ml-auto px-3 py-1.5 border border-[var(--color-border)] hover:border-[var(--color-danger)] hover:bg-[var(--color-danger)] hover:text-[var(--color-bg)] text-[var(--color-ink-faint)] disabled:opacity-30 uppercase tracking-wider transition-colors rounded-[3px]"
+          >
+            {t("action.delete")}
+          </button>
+          {actionError && (
+            <span className="text-[var(--color-danger)] normal-case tracking-normal basis-full">
+              {actionError}
+            </span>
+          )}
+        </section>
+      )}
+
       {editing ? (
         <input
           value={draft!.title}
@@ -222,7 +285,6 @@ export function EntryPage() {
             setDraft((d) => (d ? { ...d, title: e.target.value } : d))
           }
           maxLength={200}
-          autoFocus
           className="mt-4 w-full bg-transparent border-b-2 border-[var(--color-border-strong)] focus:border-[var(--color-accent)] outline-none text-3xl font-sans tracking-tight leading-tight py-1"
         />
       ) : (
@@ -344,74 +406,34 @@ export function EntryPage() {
         </section>
       )}
 
-      <section className="mt-12 flex items-center flex-wrap gap-3 border-t border-[var(--color-border)] pt-5 text-xs">
-        {editing ? (
-          <>
-            <button
-              type="button"
-              onClick={() => void saveEdit()}
-              disabled={busy || !dirty}
-              className="px-3 py-1.5 bg-[var(--color-accent)] text-[var(--color-bg)] uppercase tracking-wider rounded-[3px] disabled:opacity-30 transition-colors"
-            >
-              {busy ? t("write.saving") : t("action.save")}
-            </button>
-            <button
-              type="button"
-              onClick={cancelEdit}
-              disabled={busy}
-              className="px-3 py-1.5 border border-[var(--color-border)] hover:border-[var(--color-border-strong)] text-[var(--color-ink-dim)] hover:text-[var(--color-ink)] uppercase tracking-wider transition-colors rounded-[3px]"
-            >
-              {t("action.cancel")}
-            </button>
-            <span className="ml-auto text-[var(--color-ink-faint)] normal-case tracking-normal">
-              {t("write.shortcut_hint", { cmd: "⌘", enter: "S" })
-                .split(/(⌘|S)/)
-                .map((part, i) =>
-                  part === "⌘" || part === "S" ? (
-                    <kbd
-                      key={i}
-                      className="border border-[var(--color-border)] rounded px-1 mx-[1px]"
-                    >
-                      {part}
-                    </kbd>
-                  ) : (
-                    <span key={i}>{part}</span>
-                  ),
-                )}
-            </span>
-          </>
-        ) : (
-          <>
-            <button
-              type="button"
-              onClick={beginEdit}
-              disabled={busy || isRedacted}
-              className="px-3 py-1.5 border border-[var(--color-border)] hover:border-[var(--color-accent)] text-[var(--color-ink-dim)] hover:text-[var(--color-accent)] disabled:opacity-30 disabled:hover:border-[var(--color-border)] disabled:hover:text-[var(--color-ink-dim)] uppercase tracking-wider transition-colors rounded-[3px]"
-            >
-              {t("action.edit")}
-            </button>
-            <Link
-              to={`/write?supersedes=${entry.id}`}
-              className="px-3 py-1.5 border border-[var(--color-border)] hover:border-[var(--color-accent)] text-[var(--color-ink-dim)] hover:text-[var(--color-accent)] uppercase tracking-wider transition-colors rounded-[3px]"
-            >
-              {t("action.supersede")}
-            </Link>
-            <button
-              type="button"
-              onClick={() => setConfirmOpen(true)}
-              disabled={busy || isRedacted}
-              className="px-3 py-1.5 border border-[var(--color-border)] hover:border-[var(--color-danger)] text-[var(--color-ink-dim)] hover:text-[var(--color-danger)] disabled:opacity-30 disabled:hover:border-[var(--color-border)] disabled:hover:text-[var(--color-ink-dim)] uppercase tracking-wider transition-colors rounded-[3px]"
-            >
-              {isRedacted ? t("entry.already_redacted") : t("action.redact")}
-            </button>
-          </>
-        )}
-        {actionError && (
-          <span className="text-[var(--color-danger)] normal-case tracking-normal basis-full">
-            {actionError}
+      {editing && (
+        <section className="sticky bottom-0 -mx-10 px-10 mt-12 flex items-center flex-wrap gap-3 border-t border-[var(--color-border-strong)] py-3 text-xs bg-[var(--color-bg)]/95 backdrop-blur-sm z-10 shadow-[0_-8px_16px_-12px_rgba(0,0,0,0.4)]">
+          <button
+            type="button"
+            onClick={() => void saveEdit()}
+            disabled={busy || !dirty}
+            className="px-3 py-1.5 bg-[var(--color-accent)] text-[var(--color-bg)] uppercase tracking-wider rounded-[3px] disabled:opacity-30 transition-colors"
+          >
+            {busy ? t("write.saving") : t("action.save")}
+          </button>
+          <button
+            type="button"
+            onClick={cancelEdit}
+            disabled={busy}
+            className="px-3 py-1.5 border border-[var(--color-border)] hover:border-[var(--color-border-strong)] text-[var(--color-ink-dim)] hover:text-[var(--color-ink)] uppercase tracking-wider transition-colors rounded-[3px]"
+          >
+            {t("action.cancel")}
+          </button>
+          <span className="ml-auto text-[var(--color-ink-faint)] normal-case tracking-normal">
+            <ShortcutHint action="S" />
           </span>
-        )}
-      </section>
+          {actionError && (
+            <span className="text-[var(--color-danger)] normal-case tracking-normal basis-full">
+              {actionError}
+            </span>
+          )}
+        </section>
+      )}
 
       <ConversationView
         entryId={entry.id}
@@ -427,6 +449,16 @@ export function EntryPage() {
         confirmLabel={t("action.redact")}
         onConfirm={() => void doRedact()}
         onCancel={() => setConfirmOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        variant="danger"
+        title={t("entry.confirm_delete_title", { id: entry.id })}
+        body={t("entry.confirm_delete_body")}
+        confirmLabel={t("action.delete")}
+        onConfirm={() => void doDelete()}
+        onCancel={() => setConfirmDeleteOpen(false)}
       />
     </div>
   );
@@ -456,7 +488,7 @@ function NeighborList({
           <li key={`${r.dir}-${r.id}-${r.relation}`}>
             <Link
               to={`/entry/${r.id}`}
-              className="group flex items-baseline gap-3 border-b border-[var(--color-border)] py-2 hover:bg-[var(--color-surface)]/40 -mx-2 px-2 transition-colors"
+              className="group flex items-baseline gap-3 bg-[var(--color-surface)] py-2 hover:bg-[var(--color-surface-elevated)] -mx-2 px-2 transition-colors"
             >
               <span className="text-[11px] text-[var(--color-ink-faint)] tabular w-10">
                 #{r.id}
@@ -465,7 +497,7 @@ function NeighborList({
                 {t(`relation.${r.relation}`)}
               </span>
               <KindBadge kind={r.kind} />
-              <span className="text-sm text-[var(--color-ink)] group-hover:text-[var(--color-accent)] truncate">
+              <span className="text-sm text-[var(--color-ink)] truncate">
                 {r.title}
               </span>
             </Link>

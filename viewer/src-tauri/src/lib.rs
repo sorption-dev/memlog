@@ -82,11 +82,38 @@ async fn memlog_rpc(
     ipc.call(&method, params.unwrap_or(Value::Null)).await
 }
 
+/// Open an external URL or local file path in the user's default handler.
+/// Called from MarkdownView for any link that isn't an internal memlog
+/// route — http(s) docs, `file://` paths, plain `C:\...` or `/home/...`
+/// paths, `mailto:`, etc. The webview's own `target="_blank"` either
+/// does nothing or spawns a stray Tauri window, neither of which is what
+/// people expect.
+///
+/// We block schemes that can execute code in-process (`javascript:`,
+/// `data:`, `vbscript:`) — those should never reach a shell-level open
+/// from a markdown body. Anything else is handed to the OS, which has
+/// its own associations and security checks.
+#[tauri::command]
+async fn open_external(app: AppHandle, url: String) -> Result<(), String> {
+    let trimmed = url.trim();
+    if trimmed.is_empty() {
+        return Err("empty url".into());
+    }
+    let lower = trimmed.to_ascii_lowercase();
+    const BLOCKED: &[&str] = &["javascript:", "data:", "vbscript:"];
+    if BLOCKED.iter().any(|p| lower.starts_with(p)) {
+        return Err(format!("refusing to open scheme: {trimmed}"));
+    }
+    app.shell()
+        .open(trimmed, None)
+        .map_err(|e| format!("shell open failed: {e}"))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![memlog_rpc])
+        .invoke_handler(tauri::generate_handler![memlog_rpc, open_external])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
@@ -122,8 +149,9 @@ async fn setup_main(app: AppHandle) -> Result<(), Box<dyn std::error::Error>> {
 
     let builder = WebviewWindowBuilder::new(&app, "main", url)
         .title("memlog")
-        .inner_size(1200.0, 800.0)
+        .inner_size(920.0, 613.0)
         .min_inner_size(720.0, 480.0)
+        .center()
         .resizable(true);
 
     // Platform-specific chrome:

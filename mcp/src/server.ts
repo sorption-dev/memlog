@@ -222,6 +222,19 @@ user-requested search. Available relations:
   • contradicts — flags a conflict you noticed
   • answers — links a question entry to its resolving decision/fact
 
+INLINE REFERENCES TO OTHER ENTRIES (in body text):
+When the body's narrative needs to mention a specific entry — not a
+formal graph relation, just a "see also" or "as decided in …" — write
+it as a markdown link to its viewer path:
+
+  see also [why we picked SQLite](/entry/42)
+  this supersedes the earlier choice in [#7](/entry/7)
+
+The viewer renders these as clickable links: plain click navigates in
+place, Ctrl/Cmd+click (or middle-click) pops the entry in a separate
+window. Use this freely for narrative flow; reserve links=[] for the
+five typed relations above.
+
 Write entries in the user's language. Bodies stand alone — readable
 without this chat context, but DON'T over-explain things the reader
 (future-LLM or the user) already knows.
@@ -315,7 +328,19 @@ export function buildServer(db: DB): McpServer {
           "decision | fact | preference | todo | context | question",
         ),
         title: z.string().min(1).max(200).describe("Short title, ≤ 80 chars recommended"),
-        body: z.string().min(1).describe("Self-contained body — must read without chat context"),
+        body: z
+          .string()
+          .min(1)
+          .describe(
+            "Self-contained body — must read without chat context. To " +
+              "mention another entry inline (narrative reference, not a " +
+              "typed graph edge), use a markdown link to its viewer path: " +
+              '`[label](/entry/N)`. The viewer turns these into clickable ' +
+              "links — plain click navigates, Ctrl/Cmd+click pops a new " +
+              "window. Reserve the `links` parameter for the five typed " +
+              "relations (depends_on / supersedes / refines / contradicts / " +
+              "answers).",
+          ),
         tags: z.array(z.string()).optional().describe("Free-form tags for later filtering"),
         session_id: z
           .string()

@@ -46,7 +46,7 @@ export function ConversationView({ entryId, hasSource, sourcePath }: Props) {
 
   if (!hasSource) {
     return (
-      <section className="mt-10 border-t border-[var(--color-border)] pt-5">
+      <section className="mt-10">
         <div className="text-[11px] text-[var(--color-ink-faint)]">
           {t("conv.unavailable")}
         </div>
@@ -55,7 +55,7 @@ export function ConversationView({ entryId, hasSource, sourcePath }: Props) {
   }
 
   return (
-    <section className="mt-10 border-t border-[var(--color-border)] pt-5">
+    <section className="mt-10">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
