@@ -1,6 +1,6 @@
 {
   "name": "memlog",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Personal MCP journal with Russian morphology-aware FTS search",
   "type": "module",
   "bin": {

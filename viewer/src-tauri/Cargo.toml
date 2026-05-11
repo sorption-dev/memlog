@@ -1,6 +1,6 @@
 [package]
 name = "memlog-app"
-version = "0.1.0"
+version = "0.2.0"
 description = "memlog desktop shell"
 authors = ["memlog"]
 license = "MIT"
